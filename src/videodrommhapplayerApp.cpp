@@ -7,7 +7,7 @@ void videodrommhapplayerApp::prepare(Settings *settings)
 
 void videodrommhapplayerApp::setup()
 {
-	firstDraw = true;
+	mWaveDelay = mMovieDelay = true;
 	// Settings
 	mVDSettings = VDSettings::create();
 	mVDSettings->mLiveCode = false;
@@ -183,14 +183,21 @@ void videodrommhapplayerApp::draw()
 	/***********************************************
 	* mix 2 FBOs end
 	*/
-	if (firstDraw) {
-		if (getElapsedFrames() > 10) {
+	if (mWaveDelay) {
+		if (getElapsedFrames() > mVDSession->getWavePlaybackDelay()) {
 
-			firstDraw = false;
+			mWaveDelay = false;
 			setWindowSize(mVDSettings->mRenderWidth, mVDSettings->mRenderHeight);
 			setWindowPos(ivec2(mVDSettings->mRenderX, mVDSettings->mRenderY));
-			fs::path waveFile = getAssetPath("") / mVDSettings->mAssetsPath / "batchass-sky.wav";
+			fs::path waveFile = getAssetPath("") / mVDSettings->mAssetsPath / mVDSession->getWaveFileName();
 			mVDAudio->loadWaveFile(waveFile.string());
+		}
+	}
+	if (mMovieDelay) {
+		if (getElapsedFrames() > mVDSession->getMoviePlaybackDelay()) {
+			mMovieDelay = false;
+			fs::path movieFile = getAssetPath("") / mVDSettings->mAssetsPath / mVDSession->getMovieFileName();
+			loadMovieFile(movieFile.string());
 		}
 	}
 	gl::clear(Color::black());

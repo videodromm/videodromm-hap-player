@@ -100,7 +100,8 @@ private:
 	fs::path					mSettings;
 
 	WarpList					mWarps;
-	bool						firstDraw;
+	bool						mWaveDelay;
+	bool						mMovieDelay;
 
 	// fbo
 	void						renderSceneToFbo();
