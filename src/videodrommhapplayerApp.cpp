@@ -7,7 +7,7 @@ void videodrommhapplayerApp::prepare(Settings *settings)
 
 void videodrommhapplayerApp::setup()
 {
-	mWaveDelay = mMovieDelay = true;
+	mWaveDelay = mMovieDelay = mFadeInDelay = mFadeOutDelay = true;
 	// Settings
 	mVDSettings = VDSettings::create();
 	mVDSettings->mLiveCode = false;
@@ -49,7 +49,7 @@ void videodrommhapplayerApp::setup()
 	// render fbo
 	gl::Fbo::Format fboFormat;
 	//format.setSamples( 4 ); // uncomment this to enable 4x antialiasing
-	mRenderFbo = gl::Fbo::create(mVDSettings->mRenderWidth, mVDSettings->mRenderHeight, fboFormat.colorTexture());
+	mRenderFbo = gl::Fbo::create(mVDSettings->mFboWidth, mVDSettings->mFboHeight, fboFormat.colorTexture());
 
 	// hap
 	mLoopVideo = false;
@@ -131,7 +131,7 @@ void videodrommhapplayerApp::draw()
 	aShader->uniform("height", 1);
 	aShader->uniform("iRenderXY", mVDSettings->mRenderXY);
 	aShader->uniform("iZoom", mVDSettings->controlValues[22]);
-	aShader->uniform("iAlpha", mVDSettings->controlValues[4]);
+	aShader->uniform("iAlpha", mVDSettings->controlValues[4] * mVDSettings->iAlpha);
 	aShader->uniform("iBlendmode", mVDSettings->iBlendMode);
 	aShader->uniform("iChromatic", mVDSettings->controlValues[10]);
 	aShader->uniform("iRotationSpeed", mVDSettings->controlValues[19]);
@@ -183,12 +183,17 @@ void videodrommhapplayerApp::draw()
 	/***********************************************
 	* mix 2 FBOs end
 	*/
-	if (mWaveDelay) {
-		if (getElapsedFrames() > mVDSession->getWavePlaybackDelay()) {
-
-			mWaveDelay = false;
+	if (mFadeInDelay) {
+		if (getElapsedFrames() > mVDSession->getFadeInDelay()) {
+			mFadeInDelay = false;
 			setWindowSize(mVDSettings->mRenderWidth, mVDSettings->mRenderHeight);
 			setWindowPos(ivec2(mVDSettings->mRenderX, mVDSettings->mRenderY));
+			timeline().apply(&mVDSettings->iAlpha, 0.0f, 1.0f, 2.0f, EaseInCubic());
+		}
+	}
+	if (mWaveDelay) {
+		if (getElapsedFrames() > mVDSession->getWavePlaybackDelay()) {
+			mWaveDelay = false;
 			fs::path waveFile = getAssetPath("") / mVDSettings->mAssetsPath / mVDSession->getWaveFileName();
 			mVDAudio->loadWaveFile(waveFile.string());
 		}
@@ -198,6 +203,12 @@ void videodrommhapplayerApp::draw()
 			mMovieDelay = false;
 			fs::path movieFile = getAssetPath("") / mVDSettings->mAssetsPath / mVDSession->getMovieFileName();
 			loadMovieFile(movieFile.string());
+		}
+	}
+	if (mFadeOutDelay) {
+		if (getElapsedFrames() > mVDSession->getEndFrame()) {
+			mFadeOutDelay = false;
+			timeline().apply(&mVDSettings->iAlpha, 1.0f, 0.0f, 2.0f, EaseInCubic());
 		}
 	}
 	gl::clear(Color::black());

@@ -332,5 +332,8 @@
     <None Include="..\assets\mix.frag">
       <Filter>assets</Filter>
     </None>
+    <None Include="..\assets\intro\session.json">
+      <Filter>assets</Filter>
+    </None>
   </ItemGroup>
 </Project>

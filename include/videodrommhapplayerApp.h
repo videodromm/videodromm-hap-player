@@ -102,6 +102,8 @@ private:
 	WarpList					mWarps;
 	bool						mWaveDelay;
 	bool						mMovieDelay;
+	bool						mFadeInDelay;
+	bool						mFadeOutDelay;
 
 	// fbo
 	void						renderSceneToFbo();

@@ -120,6 +120,7 @@
     <Xml Include="Release\VDSettings.xml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\assets\intro\session.json" />
     <None Include="..\assets\mix.frag" />
   </ItemGroup>
   <ItemGroup>
