@@ -35,7 +35,7 @@ void videodrommhapplayerApp::setup()
 	disableFrameRate();
 
 	// initialize warps
-	mSettings = getAssetPath("") / "warps.xml";
+	mSettings = getAssetPath("") / mVDSettings->mAssetsPath / "warps.xml";
 	if (fs::exists(mSettings)) {
 		// load warp settings from file if one exists
 		mWarps = Warp::readSettings(loadFile(mSettings));
@@ -279,6 +279,7 @@ void videodrommhapplayerApp::mouseUp(MouseEvent event)
 void videodrommhapplayerApp::keyDown(KeyEvent event)
 {
 	fs::path moviePath;
+	string fileName;
 
 	// pass this key event to the warp editor first
 	if (!Warp::handleKeyDown(mWarps, event)) {
@@ -337,7 +338,12 @@ void videodrommhapplayerApp::keyDown(KeyEvent event)
 				mLoopVideo = !mLoopVideo;
 				if (mMovie) mMovie->setLoop(mLoopVideo);
 				break;
-
+			case KeyEvent::KEY_a:
+				fileName = "warps" + toString(getElapsedFrames()) + ".xml";
+				mSettings = getAssetPath("") / mVDSettings->mAssetsPath / fileName;
+				Warp::writeSettings(mWarps, writeFile(mSettings));
+				mSettings = getAssetPath("") / mVDSettings->mAssetsPath / "warps.xml";
+				break;
 			}
 
 		}
