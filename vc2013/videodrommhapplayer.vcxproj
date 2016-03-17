@@ -117,7 +117,9 @@
   <ItemGroup>
     <Xml Include="..\assets\warps.xml" />
     <Xml Include="Debug\VDSettings.xml" />
-    <Xml Include="Release\VDSettings.xml" />
+    <Xml Include="Release\VDSettings.xml">
+      <SubType>Designer</SubType>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\assets\intro\session.json" />

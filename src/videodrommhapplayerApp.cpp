@@ -80,11 +80,11 @@ void videodrommhapplayerApp::renderSceneToFbo()
 	// on non-OpenGL ES platforms, you can just call mFbo->unbindFramebuffer() at the end of the function
 	// but this will restore the "screen" FBO on OpenGL ES, and does the right thing on both platforms
 	gl::ScopedFramebuffer fbScp(mRenderFbo);
-	gl::clear(Color::gray(0.03f), true);//mBlack
+	gl::clear(Color::gray(0.303f), true);//mBlack
 	// setup the viewport to match the dimensions of the FBO
 	gl::ScopedViewport scpVp(ivec2(0), mRenderFbo->getSize());
 	gl::color(Color::white());
-	gl::viewport(getWindowSize());
+	//gl::viewport(0, -200,1020,768);// getWindowSize());
 
 	if (mMovie) {
 		if (mMovie->isPlaying()) mMovie->draw();
@@ -247,8 +247,8 @@ void videodrommhapplayerApp::mouseMove(MouseEvent event)
 	if (!Warp::handleMouseMove(mWarps, event)) {
 		// let your application perform its mouseMove handling here
 		mVDSettings->controlValues[10] = event.getX() / mVDSettings->mRenderWidth;
-		mVDUtils->moveX1LeftOrTop(event.getX());
-		mVDUtils->moveY1LeftOrTop(event.getY());
+		//mVDUtils->moveX1LeftOrTop(event.getX());
+		//mVDUtils->moveY1LeftOrTop(event.getY());
 	}
 }
 
