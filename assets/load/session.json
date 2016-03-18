@@ -1,0 +1,14 @@
+{
+   "assets" : {
+      "moviefile" : "loadHapNoSound.mov",
+      "movieplaybackdelay" : 14,
+      "wavefile" : "load.wav",
+      "waveplaybackdelay" : 15
+   },
+   "settings" : {
+      "bpm" : 176,
+      "endframe" : 150000,
+      "fadeindelay" : 15,
+      "fadeoutdelay" : 15
+   }
+}

@@ -95,8 +95,6 @@ private:
 	// shaders
 	gl::GlslProgRef				aShader;
 
-	bool						mUseBeginEnd;
-
 	fs::path					mSettings;
 
 	WarpList					mWarps;
@@ -104,7 +102,8 @@ private:
 	bool						mMovieDelay;
 	bool						mFadeInDelay;
 	bool						mFadeOutDelay;
-
+	gl::TextureRef				mImage;
+	Area						mSrcArea;
 	// fbo
 	void						renderSceneToFbo();
 	gl::FboRef					mRenderFbo;

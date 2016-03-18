@@ -30,7 +30,6 @@ void videodrommhapplayerApp::setup()
 	gl::disableBlending();
 
 	// warping
-	mUseBeginEnd = false;
 	updateWindowTitle();
 	disableFrameRate();
 
@@ -45,6 +44,8 @@ void videodrommhapplayerApp::setup()
 		mWarps.push_back(WarpPerspectiveBilinear::create());
 		mWarps.push_back(WarpPerspectiveBilinear::create());
 	}
+
+	mSrcArea = Area(0, 22, 398, 420);//Area(x1, y1, x2, y2);
 
 	// render fbo
 	gl::Fbo::Format fboFormat;
@@ -80,7 +81,7 @@ void videodrommhapplayerApp::renderSceneToFbo()
 	// on non-OpenGL ES platforms, you can just call mFbo->unbindFramebuffer() at the end of the function
 	// but this will restore the "screen" FBO on OpenGL ES, and does the right thing on both platforms
 	gl::ScopedFramebuffer fbScp(mRenderFbo);
-	gl::clear(Color::gray(0.303f), true);//mBlack
+	gl::clear(Color::black(), true);
 	// setup the viewport to match the dimensions of the FBO
 	gl::ScopedViewport scpVp(ivec2(0), mRenderFbo->getSize());
 	gl::color(Color::white());
@@ -215,21 +216,14 @@ void videodrommhapplayerApp::draw()
 	gl::setMatricesWindow(toPixels(getWindowSize()));
 	//gl::draw(mRenderFbo->getColorTexture());
 	int i = 0;
-	for (auto &warp : mWarps) {
-		if (mUseBeginEnd) {
 
-			int w = mRenderFbo->getColorTexture()->getWidth();
-			int h = mRenderFbo->getColorTexture()->getHeight();
-			warp->draw(mRenderFbo->getColorTexture(), Area(0, 0, w, h), Rectf(200, 100, 200 + w / 2, 100 + h / 2));
-		}
-		else {
+	for (auto &warp : mWarps) {
 			if (i % 2 == 0) {
-				warp->draw(mVDFbos[mVDSettings->mMixFboIndex]->getTexture(), mVDUtils->getSrcAreaLeftOrTop());
+				warp->draw(mVDFbos[mVDSettings->mMixFboIndex]->getTexture(), mSrcArea, warp->getBounds());//mVDUtils->getSrcAreaLeftOrTop());
 			}
 			else {
-				warp->draw(mVDFbos[mVDSettings->mMixFboIndex]->getTexture(), mVDUtils->getSrcAreaRightOrBottom());
+				warp->draw(mVDFbos[mVDSettings->mMixFboIndex]->getTexture(), mSrcArea, warp->getBounds());//mVDUtils->getSrcAreaRightOrBottom());
 			}
-		}
 		//warp->draw(mRenderFbo->getColorTexture(), mRenderFbo->getBounds());
 		i++;
 	}
@@ -316,8 +310,22 @@ void videodrommhapplayerApp::keyDown(KeyEvent event)
 				// toggle warp edit mode
 				Warp::enableEditMode(!Warp::isEditModeEnabled());
 				break;
-			case KeyEvent::KEY_c:
+			/*case KeyEvent::KEY_c:
 				mUseBeginEnd = !mUseBeginEnd;
+				break;*/
+			case KeyEvent::KEY_i:
+				// toggle drawing a random region of the image
+				if (mMovie) {
+					if (mSrcArea.getWidth() != mMovie->getWidth() || mSrcArea.getHeight() != mMovie->getHeight())
+						mSrcArea = mMovie->getBounds();
+					else {
+						int x1 = Rand::randInt(0, mMovie->getWidth() - 150);
+						int y1 = Rand::randInt(0, mMovie->getHeight() - 150);
+						int x2 = Rand::randInt(x1 + 150, mMovie->getWidth());
+						int y2 = Rand::randInt(y1 + 150, mMovie->getHeight());
+						mSrcArea = Area(x1, y1, x2, y2);
+					}
+				}
 				break;
 			case KeyEvent::KEY_o:
 				// open hap video
