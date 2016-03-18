@@ -72,6 +72,7 @@ void videodrommhapplayerApp::update()
 	mVDAudio->update();
 	mVDAnimation->update();
 	mVDRouter->update();
+
 	updateWindowTitle();
 }
 
@@ -207,6 +208,12 @@ void videodrommhapplayerApp::draw()
 			loadMovieFile(movieFile.string());
 		}
 	}
+	else {
+		if (getElapsedFrames() > 300 && mVDSettings->mAssetsPath == "rockinpeace") {
+
+		}
+
+	}
 	if (mFadeOutDelay) {
 		if (getElapsedFrames() > mVDSession->getEndFrame()) {
 			mFadeOutDelay = false;
@@ -219,12 +226,13 @@ void videodrommhapplayerApp::draw()
 	int i = 0;
 
 	for (auto &warp : mWarps) {
-			if (i % 2 == 0) {
+		if (i == 0) {
+			if (mVDSettings->controlValues[41])
 				warp->draw(mVDFbos[mVDSettings->mMixFboIndex]->getTexture(), mSrcArea, warp->getBounds());//mVDUtils->getSrcAreaLeftOrTop());
-			}
-			else {
-				warp->draw(mVDFbos[mVDSettings->mMixFboIndex]->getTexture(), mSrcArea, warp->getBounds());//mVDUtils->getSrcAreaRightOrBottom());
-			}
+		}
+		else {
+			warp->draw(mVDFbos[mVDSettings->mMixFboIndex]->getTexture(), mSrcArea, warp->getBounds());//mVDUtils->getSrcAreaRightOrBottom());
+		}
 		//warp->draw(mRenderFbo->getColorTexture(), mRenderFbo->getBounds());
 		i++;
 	}
@@ -311,7 +319,17 @@ void videodrommhapplayerApp::keyDown(KeyEvent event)
 				// toggle warp edit mode
 				Warp::enableEditMode(!Warp::isEditModeEnabled());
 				break;
-
+			case KeyEvent::KEY_c:
+				if (mVDSettings->mCursorVisible)
+				{
+					hideCursor();
+				}
+				else
+				{
+					showCursor();
+				}
+				mVDSettings->mCursorVisible = !mVDSettings->mCursorVisible;
+				break;
 			case KeyEvent::KEY_i:
 				// toggle drawing a random region of the image
 				if (mMovie) {
@@ -326,12 +344,6 @@ void videodrommhapplayerApp::keyDown(KeyEvent event)
 					}
 				}
 				break;
-			/*case KeyEvent::KEY_o:
-				// open hap video
-				moviePath = getOpenFilePath();
-				if (!moviePath.empty())
-					loadMovieFile(moviePath);
-				break;*/
 			case KeyEvent::KEY_p:
 				if (mMovie) mMovie->play();
 				break;
@@ -362,15 +374,15 @@ void videodrommhapplayerApp::loadMovieFile(const fs::path &moviePath)
 		mMovie.reset();
 		// load up the movie, set it to loop, and begin playing
 		mMovie = qtime::MovieGlHap::create(moviePath);
-		mLoopVideo = (mMovie->getDuration() < 30.0f);
+		mLoopVideo = (mMovie->getDuration() < 50.0f);
 		mMovie->setLoop(mLoopVideo);
+		//if (mVDSettings->mAssetsPath == "rockinpeace") if (mMovie) mMovie->setLoop(true);
 		mMovie->play();
 	}
 	catch (ci::Exception &e)
 	{
 		console() << string(e.what()) << std::endl;
 		console() << "Unable to load the movie." << std::endl;
-		mInfoTexture.reset();
 	}
 }
 

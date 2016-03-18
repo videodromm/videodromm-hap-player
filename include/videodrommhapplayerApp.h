@@ -42,6 +42,8 @@ along with Cinder-Warping.  If not, see <http://www.gnu.org/licenses/>.
 #include "VDRouter.h"
 // fbo
 #include "VDFbo.h"
+// Image sequence
+#include "VDImageSequence.h"
 // hap
 #include "MovieHap.h"
 
@@ -96,6 +98,7 @@ private:
 	vector<VDFboRef>			mVDFbos;
 	// Message router
 	VDRouterRef					mVDRouter;
+
 	// shaders
 	gl::GlslProgRef				aShader;
 
@@ -112,7 +115,8 @@ private:
 	void						renderSceneToFbo();
 	gl::FboRef					mRenderFbo;
 	// hap
-	gl::TextureRef				mInfoTexture;
 	qtime::MovieGlHapRef		mMovie;
 	bool						mLoopVideo;
+	// image sequence
+
 };

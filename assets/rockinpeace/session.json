@@ -1,0 +1,14 @@
+{
+   "assets" : {
+      "moviefile" : "peoplization.mov",
+      "movieplaybackdelay" : 14,
+      "wavefile" : "rockinpeace.wav",
+      "waveplaybackdelay" : 17
+   },
+   "settings" : {
+      "bpm" : 206,
+      "endframe" : 15222,
+      "fadeindelay" : 25,
+      "fadeoutdelay" : 15
+   }
+}
