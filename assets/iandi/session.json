@@ -1,0 +1,14 @@
+{
+   "assets" : {
+      "moviefile" : "IandIHAPsansSon.mov",
+      "movieplaybackdelay" : 21,
+      "wavefile" : "15IandI.wav",
+      "waveplaybackdelay" : 25
+   },
+   "settings" : {
+      "bpm" : 182,
+      "endframe" : 17910,
+      "fadeindelay" : 25,
+      "fadeoutdelay" : 15
+   }
+}

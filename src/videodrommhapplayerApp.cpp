@@ -56,6 +56,15 @@ void videodrommhapplayerApp::setup()
 
 	// hap
 	mLoopVideo = false;
+	// mouse cursor
+	if (mVDSettings->mCursorVisible)
+	{
+		hideCursor();
+	}
+	else
+	{
+		showCursor();
+	}
 	// bpm
 	setFrameRate(mVDSession->getTargetFps());
 
@@ -227,8 +236,10 @@ void videodrommhapplayerApp::draw()
 
 	for (auto &warp : mWarps) {
 		if (i == 0) {
-			if (mVDSettings->controlValues[41])
+			if (mVDSettings->controlValues[41]) {
 				warp->draw(mVDFbos[mVDSettings->mMixFboIndex]->getTexture(), mSrcArea, warp->getBounds());//mVDUtils->getSrcAreaLeftOrTop());
+
+			}
 		}
 		else {
 			warp->draw(mVDFbos[mVDSettings->mMixFboIndex]->getTexture(), mSrcArea, warp->getBounds());//mVDUtils->getSrcAreaRightOrBottom());

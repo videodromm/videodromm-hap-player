@@ -1,0 +1,14 @@
+{
+   "assets" : {
+      "moviefile" : "pfmlHapNoSound.mov",
+      "movieplaybackdelay" : 14,
+      "wavefile" : "13pfml.wav",
+      "waveplaybackdelay" : 17
+   },
+   "settings" : {
+      "bpm" : 184,
+      "endframe" : 13643,
+      "fadeindelay" : 15,
+      "fadeoutdelay" : 15
+   }
+}
