@@ -20,6 +20,8 @@ void videodrommhapplayerApp::setup()
 	mVDAudio = VDAudio::create(mVDSettings);
 	// Animation
 	mVDAnimation = VDAnimation::create(mVDSettings, mVDSession);
+	// Message router
+	mVDRouter = VDRouter::create(mVDSettings, mVDAnimation, mVDSession);
 	// Shaders
 	mVDShaders = VDShaders::create(mVDSettings);
 	// mix fbo at index 0
@@ -61,7 +63,7 @@ void videodrommhapplayerApp::setup()
 void videodrommhapplayerApp::cleanup()
 {
 	// save warp settings
-	Warp::writeSettings(mWarps, writeFile(mSettings));
+	// Warp::writeSettings(mWarps, writeFile(mSettings)); TODO put back
 	mVDSettings->save();
 	mVDSession->save();
 }
@@ -69,8 +71,7 @@ void videodrommhapplayerApp::update()
 {
 	mVDAudio->update();
 	mVDAnimation->update();
-
-
+	mVDRouter->update();
 	updateWindowTitle();
 }
 
@@ -127,7 +128,7 @@ void videodrommhapplayerApp::draw()
 	aShader->uniform("iColor", vec3(mVDSettings->controlValues[1], mVDSettings->controlValues[2], mVDSettings->controlValues[3]));// mVDSettings->iColor);
 	aShader->uniform("iBackgroundColor", vec3(mVDSettings->controlValues[5], mVDSettings->controlValues[6], mVDSettings->controlValues[7]));// mVDSettings->iBackgroundColor);
 	aShader->uniform("iSteps", (int)mVDSettings->controlValues[20]);
-	aShader->uniform("iRatio", mVDSettings->controlValues[11]);//check if needed: +1;//mVDSettings->iRatio); 
+	aShader->uniform("iRatio", 20.0f);// mVDSettings->controlValues[11]);//check if needed: +1;
 	aShader->uniform("width", 1);
 	aShader->uniform("height", 1);
 	aShader->uniform("iRenderXY", mVDSettings->mRenderXY);
@@ -148,7 +149,7 @@ void videodrommhapplayerApp::draw()
 	aShader->uniform("iTransition", mVDSettings->iTransition);
 	aShader->uniform("iAnim", mVDSettings->iAnim.value());
 	aShader->uniform("iRepeat", (int)mVDSettings->iRepeat);
-	aShader->uniform("iVignette", (int)mVDSettings->controlValues[47]);
+	aShader->uniform("iVignette", 1);// (int)mVDSettings->controlValues[47]);
 	aShader->uniform("iInvert", (int)mVDSettings->controlValues[48]);
 	aShader->uniform("iDebug", (int)mVDSettings->iDebug);
 	aShader->uniform("iShowFps", (int)mVDSettings->iShowFps);
@@ -310,14 +311,12 @@ void videodrommhapplayerApp::keyDown(KeyEvent event)
 				// toggle warp edit mode
 				Warp::enableEditMode(!Warp::isEditModeEnabled());
 				break;
-			/*case KeyEvent::KEY_c:
-				mUseBeginEnd = !mUseBeginEnd;
-				break;*/
+
 			case KeyEvent::KEY_i:
 				// toggle drawing a random region of the image
 				if (mMovie) {
 					if (mSrcArea.getWidth() != mMovie->getWidth() || mSrcArea.getHeight() != mMovie->getHeight())
-						mSrcArea = mMovie->getBounds();
+						mSrcArea = Area(0, 22, 398, 420);
 					else {
 						int x1 = Rand::randInt(0, mMovie->getWidth() - 150);
 						int y1 = Rand::randInt(0, mMovie->getHeight() - 150);
@@ -327,12 +326,12 @@ void videodrommhapplayerApp::keyDown(KeyEvent event)
 					}
 				}
 				break;
-			case KeyEvent::KEY_o:
+			/*case KeyEvent::KEY_o:
 				// open hap video
 				moviePath = getOpenFilePath();
 				if (!moviePath.empty())
 					loadMovieFile(moviePath);
-				break;
+				break;*/
 			case KeyEvent::KEY_p:
 				if (mMovie) mMovie->play();
 				break;

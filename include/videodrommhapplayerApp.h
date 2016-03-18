@@ -38,6 +38,8 @@ along with Cinder-Warping.  If not, see <http://www.gnu.org/licenses/>.
 #include "VDAnimation.h"
 // shaders
 #include "VDShaders.h"
+// Message router
+#include "VDRouter.h"
 // fbo
 #include "VDFbo.h"
 // hap
@@ -92,6 +94,8 @@ private:
 	VDShadersRef				mVDShaders;
 	// Fbos
 	vector<VDFboRef>			mVDFbos;
+	// Message router
+	VDRouterRef					mVDRouter;
 	// shaders
 	gl::GlslProgRef				aShader;
 

@@ -723,7 +723,7 @@ void main(void)
 	if (iVignette == 1)
 	{
 		vec2 p = 1.0 + -2.0 * uv;
-		col = mix( col, vec3( iBackgroundColor ), dot( p, p )*iRotationSpeed );
+		col = mix( col, vec3( iBackgroundColor ), dot( p, p ) );//*iRotationSpeed );
 	}
 	// badtv
 	if (iBadTv > 0.01)
