@@ -25,7 +25,7 @@ void videodrommhapplayerApp::setup()
 	// Shaders
 	mVDShaders = VDShaders::create(mVDSettings);
 	// mix fbo at index 0
-	mVDFbos.push_back(VDFbo::create(mVDSettings, "mix", mVDSettings->mFboWidth, mVDSettings->mFboHeight));
+	//mVDFbos.push_back(VDFbo::create(mVDSettings, "mix", mVDSettings->mFboWidth, mVDSettings->mFboHeight));
 
 	gl::enableDepthWrite();
 	gl::enableDepthRead();
@@ -53,6 +53,7 @@ void videodrommhapplayerApp::setup()
 	gl::Fbo::Format fboFormat;
 	//format.setSamples( 4 ); // uncomment this to enable 4x antialiasing
 	mRenderFbo = gl::Fbo::create(mVDSettings->mFboWidth, mVDSettings->mFboHeight, fboFormat.colorTexture());
+	mFbo = gl::Fbo::create(mVDSettings->mFboWidth, mVDSettings->mFboHeight, fboFormat.colorTexture());
 
 	// hap
 	mLoopVideo = false;
@@ -104,16 +105,12 @@ void videodrommhapplayerApp::renderSceneToFbo()
 }
 void videodrommhapplayerApp::draw()
 {
+
+	/*
 	renderSceneToFbo();
 
-	/***********************************************
-	* mix 2 FBOs begin
-	* first render the 2 frags to fbos (done before)
-	* then use them as textures for the mix shader
-	*/
-
 	// draw using the mix shader
-	mVDFbos[mVDSettings->mMixFboIndex]->getFboRef()->bindFramebuffer();
+	mFbo->bindFramebuffer();
 	//gl::setViewport(mVDFbos[mVDSettings->mMixFboIndex].fbo.getBounds());
 
 	// clear the FBO
@@ -173,8 +170,8 @@ void videodrommhapplayerApp::draw()
 	aShader->uniform("iRedMultiplier", mVDSettings->iRedMultiplier);
 	aShader->uniform("iGreenMultiplier", mVDSettings->iGreenMultiplier);
 	aShader->uniform("iBlueMultiplier", mVDSettings->iBlueMultiplier);
-	aShader->uniform("iFlipH", mVDFbos[mVDSettings->mMixFboIndex]->isFlipH());
-	aShader->uniform("iFlipV", mVDFbos[mVDSettings->mMixFboIndex]->isFlipV());
+	aShader->uniform("iFlipH", false);
+	aShader->uniform("iFlipV", false);
 	aShader->uniform("iParam1", mVDSettings->iParam1);
 	aShader->uniform("iParam2", mVDSettings->iParam2);
 	aShader->uniform("iXorY", mVDSettings->iXorY);
@@ -184,7 +181,7 @@ void videodrommhapplayerApp::draw()
 	mRenderFbo->getColorTexture()->bind(1);
 	gl::drawSolidRect(Rectf(0, 0, mVDSettings->mFboWidth, mVDSettings->mFboHeight));
 	// stop drawing into the FBO
-	mVDFbos[mVDSettings->mMixFboIndex]->getFboRef()->unbindFramebuffer();
+	mFbo->unbindFramebuffer();
 	mRenderFbo->getColorTexture()->unbind();
 	mRenderFbo->getColorTexture()->unbind();
 
@@ -232,21 +229,27 @@ void videodrommhapplayerApp::draw()
 	gl::clear(Color::black());
 	gl::setMatricesWindow(toPixels(getWindowSize()));
 	//gl::draw(mRenderFbo->getColorTexture());
+
 	int i = 0;
-
 	for (auto &warp : mWarps) {
+		if (mMovie) {
+			//if (mMovie->isPlaying()) 
+			warp->draw(mMovie->getTexture(), mSrcArea);
+		}
+	}
+	/*for (auto &warp : mWarps) {
 		if (i == 0) {
-			if (mVDSettings->controlValues[41]) {
-				warp->draw(mVDFbos[mVDSettings->mMixFboIndex]->getTexture(), mSrcArea, warp->getBounds());//mVDUtils->getSrcAreaLeftOrTop());
+		if (mVDSettings->controlValues[41]) {
+		warp->draw(mFbo->getColorTexture(), mSrcArea, warp->getBounds());//mVDUtils->getSrcAreaLeftOrTop());
 
-			}
+		}
 		}
 		else {
-			warp->draw(mVDFbos[mVDSettings->mMixFboIndex]->getTexture(), mSrcArea, warp->getBounds());//mVDUtils->getSrcAreaRightOrBottom());
+		warp->draw(mFbo->getColorTexture(), mSrcArea, warp->getBounds());//mVDUtils->getSrcAreaRightOrBottom());
 		}
 		//warp->draw(mRenderFbo->getColorTexture(), mRenderFbo->getBounds());
 		i++;
-	}
+		}*/
 
 }
 void videodrommhapplayerApp::resize()
@@ -271,7 +274,9 @@ void videodrommhapplayerApp::mouseDown(MouseEvent event)
 	// pass this mouse event to the warp editor first
 	if (!Warp::handleMouseDown(mWarps, event)) {
 		// let your application perform its mouseDown handling here
-		mVDSettings->controlValues[45] = 1.0f;
+		// glitch mVDSettings->controlValues[45] = 1.0f;
+		// lol mSrcArea = Area(event.getX(), event.getY(), mMovie->getWidth(), mMovie->getHeight());//Area(x1, y1, x2, y2);
+
 	}
 }
 void videodrommhapplayerApp::mouseDrag(MouseEvent event)
@@ -287,18 +292,18 @@ void videodrommhapplayerApp::mouseUp(MouseEvent event)
 	// pass this mouse event to the warp editor first
 	if (!Warp::handleMouseUp(mWarps, event)) {
 		// let your application perform its mouseUp handling here
-		mVDSettings->controlValues[45] = 0.0f;
+		// glitch mVDSettings->controlValues[45] = 0.0f;
 	}
 }
 void videodrommhapplayerApp::keyDown(KeyEvent event)
 {
 	fs::path moviePath;
 	string fileName;
-
+	float movieTime;
 	// pass this key event to the warp editor first
 	if (!Warp::handleKeyDown(mWarps, event)) {
 		// warp editor did not handle the key, so handle it here
-		if (!mVDAnimation->handleKeyDown(event)) {
+		//if (!mVDAnimation->handleKeyDown(event)) {
 			// Animation did not handle the key, so handle it here
 			switch (event.getCode()) {
 
@@ -343,7 +348,7 @@ void videodrommhapplayerApp::keyDown(KeyEvent event)
 				break;
 			case KeyEvent::KEY_i:
 				// toggle drawing a random region of the image
-				if (mMovie) {
+				/*if (mMovie) {
 					if (mSrcArea.getWidth() != mMovie->getWidth() || mSrcArea.getHeight() != mMovie->getHeight())
 						mSrcArea = Area(0, 22, 398, 420);
 					else {
@@ -353,6 +358,17 @@ void videodrommhapplayerApp::keyDown(KeyEvent event)
 						int y2 = Rand::randInt(y1 + 150, mMovie->getHeight());
 						mSrcArea = Area(x1, y1, x2, y2);
 					}
+				}*/
+				break;
+			case KeyEvent::KEY_LEFT:
+				if (mMovie) {
+					mMovie->stepBackward();
+				}
+				break;
+			case KeyEvent::KEY_RIGHT:
+				if (mMovie) {
+					movieTime = mMovie->getCurrentTime();
+					mMovie->seekToTime(movieTime + 0.1);
 				}
 				break;
 			case KeyEvent::KEY_p:
@@ -375,8 +391,7 @@ void videodrommhapplayerApp::keyDown(KeyEvent event)
 				mSettings = getAssetPath("") / mVDSettings->mAssetsPath / "warps.xml";
 				break;
 			}
-
-		}
+		//}
 	}
 }
 void videodrommhapplayerApp::loadMovieFile(const fs::path &moviePath)
@@ -387,6 +402,8 @@ void videodrommhapplayerApp::loadMovieFile(const fs::path &moviePath)
 		mMovie = qtime::MovieGlHap::create(moviePath);
 		mLoopVideo = (mMovie->getDuration() < 50.0f);
 		mMovie->setLoop(mLoopVideo);
+		mSrcArea = Area(0, 0, mMovie->getWidth(), mMovie->getHeight());//Area(x1, y1, x2, y2);
+		
 		//if (mVDSettings->mAssetsPath == "rockinpeace") if (mMovie) mMovie->setLoop(true);
 		mMovie->play();
 	}
@@ -413,7 +430,7 @@ void videodrommhapplayerApp::keyUp(KeyEvent event)
 
 void videodrommhapplayerApp::updateWindowTitle()
 {
-	getWindow()->setTitle(to_string(getElapsedFrames()) + " " + to_string((int)getAverageFps()) + " fps Batchass Sky");
+	getWindow()->setTitle(to_string(getElapsedFrames()) + " " + to_string((int)getAverageFps()) + " fps Hap Player");
 }
 
 CINDER_APP(videodrommhapplayerApp, RendererGl, &videodrommhapplayerApp::prepare)

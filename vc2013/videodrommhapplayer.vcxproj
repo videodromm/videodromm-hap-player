@@ -115,17 +115,14 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="..\assets\warps.xml" />
+    <Xml Include="..\..\assets\warps.xml" />
     <Xml Include="Debug\VDSettings.xml" />
     <Xml Include="Release\VDSettings.xml">
       <SubType>Designer</SubType>
     </Xml>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\assets\intro\session.json" />
-    <None Include="..\assets\mix.frag" />
-  </ItemGroup>
-  <ItemGroup>
+    <ClInclude Include="..\..\..\Cinder\blocks\Cinder-Videodromm\include\VDInputTexture.h" />
     <ClInclude Include="..\include\Resources.h" />
     <ClInclude Include="..\..\..\Cinder\blocks\Cinder-Hap2\src\HapSupport.h" />
     <ClInclude Include="..\..\..\Cinder\blocks\Cinder-Hap2\src\MovieHap.h" />
@@ -145,7 +142,6 @@
     <ClInclude Include="..\..\..\Cinder\blocks\Cinder-Videodromm\include\VDAudio.h" />
     <ClInclude Include="..\..\..\Cinder\blocks\Cinder-Videodromm\include\VDFbo.h" />
     <ClInclude Include="..\..\..\Cinder\blocks\Cinder-Videodromm\include\VDHapMovie.h" />
-    <ClInclude Include="..\..\..\Cinder\blocks\Cinder-Videodromm\include\VDImageSequence.h" />
     <ClInclude Include="..\..\..\Cinder\blocks\Cinder-Videodromm\include\VDLog.h" />
     <ClInclude Include="..\..\..\Cinder\blocks\Cinder-Videodromm\include\VDRouter.h" />
     <ClInclude Include="..\..\..\Cinder\blocks\Cinder-Videodromm\include\VDSession.h" />
@@ -163,6 +159,7 @@
     <ClInclude Include="..\include\videodrommhapplayerApp.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\Cinder\blocks\Cinder-Videodromm\src\VDInputTexture.cpp" />
     <ClCompile Include="..\src\videodrommhapplayerApp.cpp" />
     <ClCompile Include="..\..\..\Cinder\blocks\Cinder-Hap2\src\MovieHap.cpp" />
     <ClCompile Include="..\..\..\Cinder\blocks\Cinder-Hap2\src\HapSupport.c" />
@@ -179,7 +176,6 @@
     <ClCompile Include="..\..\..\Cinder\blocks\Cinder-Videodromm\src\VDAudio.cpp" />
     <ClCompile Include="..\..\..\Cinder\blocks\Cinder-Videodromm\src\VDFbo.cpp" />
     <ClCompile Include="..\..\..\Cinder\blocks\Cinder-Videodromm\src\VDHapMovie.cpp" />
-    <ClCompile Include="..\..\..\Cinder\blocks\Cinder-Videodromm\src\VDImageSequence.cpp" />
     <ClCompile Include="..\..\..\Cinder\blocks\Cinder-Videodromm\src\VDLog.cpp" />
     <ClCompile Include="..\..\..\Cinder\blocks\Cinder-Videodromm\src\VDRouter.cpp" />
     <ClCompile Include="..\..\..\Cinder\blocks\Cinder-Videodromm\src\VDSession.cpp" />
